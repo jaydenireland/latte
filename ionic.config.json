@@ -1,0 +1,8 @@
+{
+  "name": "latte",
+  "app_id": "955612ce",
+  "type": "ionic-angular",
+  "integrations": {
+    "cordova": {}
+  }
+}
