@@ -1,0 +1,24 @@
+<ion-header>
+  <ion-navbar>
+  </ion-navbar>
+</ion-header>
+
+<ion-content>
+<ion-grid>
+    <ion-row>
+        <ion-col col-3>
+            <ion-avatar>
+                <img src="https://via.placeholder.com/200x200">
+            </ion-avatar>
+        </ion-col>
+        <ion-col>
+            <ion-chip *ngFor="let i of [1,2]">
+              <ion-label color="secondary">
+                  <p>Followers</p>
+                  <p>24</p>
+              </ion-label>
+            </ion-chip>
+        </ion-col>
+    </ion-row>
+</ion-grid>
+</ion-content>
