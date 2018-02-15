@@ -9,45 +9,51 @@ import { ModalController, NavParams } from 'ionic-angular';
 import { FollowListComponent } from '../../components/follow-list/follow-list';
 
 import { HomePage } from '../home/home';
-import { EditProfilePage } from '../edit-profile/edit-profile';
+
 @Component({
-  selector: 'page-profile',
-  templateUrl: 'profile.html'
+  selector: 'page-user',
+  templateUrl: 'user.html'
 })
-export class ProfilePage {
+export class UserPage {
   public videos : any = [];
   public page: number = 1;
-  public noMoreVideos : boolean = false;
+  public userID : number;
   public user: any = {
-    full_name: '',
-    avatar: 'https://res.cloudinary.com/latte/image/upload/v1517766124/uDlDuIm_i5jglj.jpg'
+      full_name: '',
+      avatar: 'https://res.cloudinary.com/latte/image/upload/v1517766124/uDlDuIm_i5jglj.jpg'
+  };
+  public currentUser : any = {
+      id: 0
   };
   constructor(public navCtrl: NavController,
               private storage: Storage,
               private http: HttpClient,
               public actionSheetCtrl: ActionSheetController,
               public latteService: LatteServiceProvider,
-              public modalCtrl: ModalController,
-              public appCtrl: App) {
+              public navParams: NavParams,
+              public appCtrl: App,
+              public modalCtrl: ModalController) {
+        this.userID = navParams.get('userID');
 
   }
-  ionViewDidEnter() {
-      this.latteService.isLoggedIn().then(res => {
-              this.videos = [];
-              this.page = 1;
-              let tempCall = this.latteService.whoAmI();
-              this.user = tempCall.user;
-              tempCall.promise.then(theUser => {
-                  this.user = theUser;
-              });
-
-              this.getMyVideos();
+  ionViewWillEnter() {
+      this.latteService.getProfile(this.userID).then(data => {
+          this.user = data;
+          this.getVideos();
+      });
+      let tempCall = this.latteService.whoAmI();
+      this.currentUser = tempCall.user;
+      tempCall.promise.then(user => {
+         this.currentUser = user;
       });
   }
-  ionViewDidLeave() {
+  ionViewWillLeave() {
       this.videos = [];
-      this.noMoreVideos = false;
       this.page=1;
+      (<any>document.querySelectorAll("video")).forEach(function(video) {
+         video.pause();
+         video.remove();
+      });
   }
   openFollowing() {
       let modal = this.modalCtrl.create(FollowListComponent, {
@@ -63,39 +69,31 @@ export class ProfilePage {
       });
       modal.present();
   }
-  openSettings() {
-      let actionSheet = this.actionSheetCtrl.create({
-       title: 'Actions',
-       buttons: [
-         {
-           text: 'Logout',
-           role: 'destructive',
-           handler: () => {
-             this.storage.clear();
-             this.latteService.user = this.latteService.oauth_token = null;
-             this.appCtrl.getRootNav().push(HomePage);
-           }
-         }
-       ]
-     });
-     actionSheet.present();
-  }
-  getMyVideos(ionInfinite=null) {
-      this.latteService.getMyVideos(this.page)
+  getVideos(ionInfinite=null) {
+      this.latteService.getUserVideos(this.user.id, this.page)
      .then(res => {
           if (res) {
               this.videos = this.videos.concat((<any>Object).values(res));
               this.page++;
               if (ionInfinite !== null) ionInfinite.complete();
           } else {
-              this.noMoreVideos = true;
+              this.page = 1;
               if (ionInfinite !== null) ionInfinite.complete();
           }
         }
       );
   }
-  editProfile() {
-      this.navCtrl.push(EditProfilePage);
+  followUser() {
+      this.latteService.followUser(this.user.id).then(res => {
+         this.user.followers++;
+         this.user.user_following = res;
+      });
+  }
+  unfollowUser() {
+      this.latteService.unfollowUser(this.user.id).then(res => {
+          this.user.followers--;
+         this.user.user_following = !res;
+      });
   }
   playVideos(event=null) {
       (<any>document.querySelectorAll("video")).forEach(function(video) {

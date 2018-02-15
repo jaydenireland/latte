@@ -1,11 +1,11 @@
-page-profile {
+page-user {
     .profileSum {
         text-align: center;
     }
     .avatar {
         @include circle(88px, #999);
     }
-    .editProfile {
+    .followUser {
         margin-top:-25px;
     }
     .noVideos {

@@ -1,54 +1,89 @@
 import { NgModule, ErrorHandler } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
+import { HttpClientModule } from '@angular/common/http';
+import { FormsModule } from '@angular/forms';
+import { IonicStorageModule } from '@ionic/storage';
 import { IonicApp, IonicModule, IonicErrorHandler } from 'ionic-angular';
 import { MyApp } from './app.component';
 
-import { AboutPage } from '../pages/about/about';
+import { NotificationsPage } from '../pages/notifications/notifications';
 import { ExplorePage } from '../pages/explore/explore';
 import { HomePage } from '../pages/home/home';
+import { CreateAccountPage } from '../pages/create-account/create-account';
+
 import { TabsPage } from '../pages/tabs/tabs';
 import { ProfilePage } from '../pages/profile/profile';
-import { CreatePage } from '../pages/create/create';
+import { UserPage } from '../pages/user/user';
 
-import { CameraPreview} from '@ionic-native/camera-preview';
+import { CreatePage } from '../pages/create/create';
+import { LoginPage } from '../pages/login/login';
+import { EditProfilePage } from '../pages/edit-profile/edit-profile';
+
+import { VideoPostComponent } from '../components/video-post/video-post';
+import { FollowListComponent } from '../components/follow-list/follow-list';
+import { ReportComponent } from '../components/report/report';
+
+
+import { Camera } from '@ionic-native/camera';
+import { VideoCapturePlus } from '@ionic-native/video-capture-plus';
+
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
+import { NgPipesModule} from 'ngx-pipes';
+import { LatteServiceProvider } from '../providers/latte-service/latte-service';
 
 @NgModule({
   declarations: [
     MyApp,
-    AboutPage,
+    NotificationsPage,
     ExplorePage,
     HomePage,
     ProfilePage,
     CreatePage,
+    LoginPage,
+    UserPage,
+    EditProfilePage,
+    CreateAccountPage,
+    VideoPostComponent,
+    FollowListComponent,
+    ReportComponent,
     TabsPage
   ],
   imports: [
     BrowserModule,
-    IonicModule.forRoot(MyApp, {
-            scrollPadding: false,
-            scrollAssist: false,
-            autoFocusAssist: false
-
-    })
+    NgPipesModule,
+    HttpClientModule,
+    FormsModule,
+    IonicStorageModule.forRoot(),
+    IonicModule.forRoot(MyApp)
   ],
   bootstrap: [IonicApp],
   entryComponents: [
     MyApp,
-    AboutPage,
+    NotificationsPage,
     ExplorePage,
     ProfilePage,
     HomePage,
+    CreateAccountPage,
+    FollowListComponent,
+    ReportComponent,
+    EditProfilePage,
+    UserPage,
     CreatePage,
+    LoginPage,
     TabsPage
   ],
   providers: [
     StatusBar,
     SplashScreen,
-    CameraPreview,
-    {provide: ErrorHandler, useClass: IonicErrorHandler}
+    Camera,
+    VideoCapturePlus,
+    {provide: ErrorHandler, useClass: IonicErrorHandler},
+    LatteServiceProvider
   ]
 })
 
-export class AppModule {}
+export class AppModule {
+    constructor() {}
+
+}

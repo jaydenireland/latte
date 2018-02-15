@@ -1,0 +1,16 @@
+report {
+    ion-content {
+        background-color: white;
+    }
+    .interactions button {
+        border: 0px !important;
+    }
+    ion-card-content {
+        padding: 0px !important;
+    }
+    .likes-badge {
+        position: relative;
+        top: -10px;
+        right: 10px;
+    }
+}

@@ -1,0 +1,27 @@
+<ion-header>
+  <ion-navbar>
+      <ion-title>
+      Report
+      </ion-title>
+      <ion-buttons end>
+      <button ion-button icon-only (click)="dismiss()">
+        X
+      </button>
+    </ion-buttons>
+  </ion-navbar>
+</ion-header>
+<ion-content>
+    <ion-item *ngIf="type == 'comment'">
+        <ion-avatar item-start (click)="openUser(comment.user.id)">
+            <img src="{{comment.user.avatar}}">
+        </ion-avatar>
+        <h2 (click)="openUser(comment.user.id)">{{comment.user.full_name}}</h2>
+        <p>{{comment.comment}}</p>
+    </ion-item>
+    <video-post *ngIf="(video | json) !== '{}'" [video]="video" [onlyVideo]='true'></video-post>
+    <ion-item>
+      <ion-label color="primary" fixed>Reason:</ion-label>
+      <ion-textarea placeholder="Please Explain" [(ngModel)]="reportText"></ion-textarea>
+    </ion-item>
+    <button ion-button full outline (click)="submitReport()">Submit</button>
+</ion-content>

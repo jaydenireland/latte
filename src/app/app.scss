@@ -14,7 +14,16 @@
 // To declare rules for a specific mode, create a child rule
 // for the .md, .ios, or .wp mode classes. The mode class is
 // automatically applied to the <body> element in the app.
-$navbar-color: rgb(66, 244, 176);
+// $navbar-color: rgb(66, 244, 176);
+$navbar-color: rgb(95, 177, 237);
 .toolbar-background {
   background-color: $navbar-color;
+}
+@mixin circle($width, $color) {
+  width: $width;
+  height: $width;
+  background: $color;
+  -webkit-border-radius: $width/2;
+     -moz-border-radius: $width/2;
+          border-radius: $width/2;
 }

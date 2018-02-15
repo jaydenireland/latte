@@ -1,9 +1,14 @@
 <ion-header>
   <ion-navbar>
+      <ion-title>Create</ion-title>
   </ion-navbar>
 </ion-header>
 
 <ion-content>
-    <ion-searchbar></ion-searchbar>
+    <div class="controls">
+        <button ion-button full outline (click)="record()" style="margin-bottom:50px;">Record</button>
+        <button ion-button full outline (click)="switchCamera()">Switch</button>
+    </div>
+
 
 </ion-content>

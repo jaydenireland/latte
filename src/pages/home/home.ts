@@ -1,49 +1,90 @@
-import { Component } from '@angular/core';
-import { NavController, ActionSheetController } from 'ionic-angular';
+import { Component, ViewChild } from '@angular/core';
+import { NavController } from 'ionic-angular';
+import { Storage } from '@ionic/storage';
+import { HttpClient } from '@angular/common/http';
+import { LatteServiceProvider } from '../../providers/latte-service/latte-service';
+import { LoginPage } from '../login/login';
 
 @Component({
   selector: 'page-home',
   templateUrl: 'home.html'
 })
 export class HomePage {
-
-  constructor(public navCtrl: NavController, public actionsheetCtrl: ActionSheetController) {
+  @ViewChild('myNav') nav: NavController
+  constructor(public navCtrl: NavController,
+       private http: HttpClient,
+       private storage: Storage,
+       public latteService: LatteServiceProvider) {
   }
-
-  getVideos() {
-      let returnstate = [
-          {
-              src: 'https://videos-api.jaydenireland.com/videos/1.mp4',
-              description: "My cool video #0",
-              comments: [
-                  {
-                      user: {full_name: "test mctest", avatar: "https://via.placeholder.com/200x200"},
-                      text: "blah blag blah"
-                  }
-              ]
-          },
-          {
-              src: 'https://videos-api.jaydenireland.com/videos/2.mp4',
-              description: "My cool video #1",
-              comments: [
-                  {
-                      user: {full_name: "test mctest", avatar: "https://via.placeholder.com/200x200"},
-                      text: "blah blag blah"
-                  }
-              ]
-          },
-          {
-              src: 'https://videos-api.jaydenireland.com/videos/3.mp4',
-              description: "My cool video #2",
-              comments: [
-                  {
-                      user: {full_name: "test mctest", avatar: "https://via.placeholder.com/200x200"},
-                      text: "blah blag blah"
-                  }
-              ]
+  public videos : any = [];
+  public page: number = 1;
+  public noMoreVideos : boolean = false;
+  ionViewWillEnter() {
+      this.latteService.isLoggedIn().then(res => {
+          if (!res) {
+              this.navCtrl.push(LoginPage);
+          } else {
+              this.videos = [];
+              this.page = 1;
+              this.getVideos();
           }
-      ];
-      return returnstate;
+      });
+  }
+  ionViewWillLeave() {
+      this.videos = [];
+      this.noMoreVideos = false;
+      (<any>document.querySelectorAll("video")).forEach(function(video) {
+         video.pause();
+         video.remove();
+      });
+  }
+  ionSelected(){
+    this.videos = [];
+    this.noMoreVideos = false;
+    this.page = 1;
+    this.getVideos();
+  }
+  getVideos(ionInfinite=null) {
+      return new Promise(done => {
+          this.latteService.getVideos(this.page)
+         .then(res => {
+              if (res) {
+                  this.videos = this.videos.concat((<any>Object).values(res));
+                  this.page++;
+                  if (ionInfinite !== null) ionInfinite.complete();
+              } else {
+                  this.noMoreVideos = true;
+                  if (ionInfinite !== null) ionInfinite.complete();
+              }
+              done(true);
+            }
+          );
+      })
+  }
+  doRefresh(refresher) {
+      this.videos = [];
+      this.noMoreVideos = false;
+      this.page = 1;
+      this.getVideos().then(res => {
+          refresher.complete();
+      });
+  }
+  playVideos(event=null) {
+      (<any>document.querySelectorAll("video")).forEach(function(video) {
+          var rect = video.getBoundingClientRect();
+          var elemTop = rect.top;
+          var elemBottom = rect.bottom;
+
+          // Only completely visible elements return true:
+          var isVisible = (elemTop >= 0) && (elemBottom <= window.innerHeight);
+          // Partially visible elements return true:
+          //isVisible = elemTop < window.innerHeight && elemBottom >= 0;
+          if (isVisible) {
+            video.play();
+          } else {
+              video.pause(); // can't hurt
+          }
+      });
   }
 
 }

@@ -1,3 +1,22 @@
 page-explore {
+    .category {
+      width:100%;
+      height:75px;
+      margin-top: 10px;
+      margin-bottom: 10px;
+      background-color: rgba(0, 0, 0, 0);
+      border: 1px solid black;
+      border-radius:5px;
+      display:flex;
+      font-size:24px;
+      font-weight:bold;
+      font-family:Helvetica,Sans-serif;
+      color:white;
+    }
+    .category .button-inner {
+        text-align: left;
+        display: inline;
+        padding-left: 10px;
+    }
 
 }

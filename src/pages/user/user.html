@@ -1,0 +1,49 @@
+<ion-header>
+  <ion-navbar>
+      <ion-title>
+      {{user.full_name}}
+      </ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content>
+    <ion-grid>
+        <ion-row class="profileSum">
+            <ion-col col-3>
+                <img src="{{user.avatar}}" class="avatar">
+            </ion-col>
+            <ion-col col-3 class="stat">
+                <p>Posts</p>
+                <p>{{ (videos | values).length }}</p>
+            </ion-col>
+            <ion-col col-3 class="stat" (click)="openFollowers()">
+                <p>Followers</p>
+                <p>{{ user.followers }}</p>
+            </ion-col>
+            <ion-col col-3 class="stat" (click)="openFollowing()">
+                <p>Following</p>
+                <p>{{ user.following }}</p>
+            </ion-col>
+        </ion-row>
+        <ion-row class="followUser" *ngIf="!user.user_following && user.id != currentUser.id">
+            <ion-col col-9 offset-3>
+                <button ion-button full (click)="followUser()">Follow</button>
+            </ion-col>
+        </ion-row>
+        <ion-row class="followUser" *ngIf="user.user_following && user.id != currentUser.id">
+            <ion-col col-9 offset-3>
+                <button ion-button full (click)="unfollowUser()">Following</button>
+            </ion-col>
+        </ion-row>
+    </ion-grid>
+    <ion-grid (ionScroll)="playVideos()">
+        <video-post *ngFor="let video of videos | values" [video]="video">
+        </video-post>
+        <h1 ion-text class='noVideos' *ngIf="videos.length < 1">
+            No videos!
+        </h1>
+        <ion-infinite-scroll (ionInfinite)="getVideos($event)" threshold="60%">
+           <ion-infinite-scroll-content></ion-infinite-scroll-content>
+         </ion-infinite-scroll>
+    </ion-grid>
+</ion-content>

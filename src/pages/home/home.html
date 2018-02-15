@@ -1,25 +1,25 @@
 <ion-header>
-  <ion-navbar>
-      <ion-title class="text-center"> Latte </ion-title>
-  </ion-navbar>
+    <ion-navbar>
+        <ion-title class="text-center"> Latte </ion-title>
+    </ion-navbar>
 </ion-header>
 
-<ion-content padding>
-    <ion-card *ngFor="let video of getVideos()">
-        <video
-        src="{{video.src}}"
-        width="100%"
-        onClick="this.paused ? this.play() : this.pause" autoplay muted></video>
-        <ion-list>
-          <ion-item>{{video.description}}</ion-item>
-          <ion-item *ngFor="let comment of video.comments">
-            <ion-avatar item-start>
-              <img src="{{comment.user.avatar}}">
-            </ion-avatar>
-            <h2>{{comment.user.full_name}}</h2>
-            <p>{{comment.text}}</p>
-          </ion-item>
-        </ion-list>
-    </ion-card>
+<ion-content padding (ionScroll)="playVideos($event)">
+    <ion-refresher (ionRefresh)="doRefresh($event)" pullMin="100">
+      <ion-refresher-content
+        pullingIcon="arrow-dropdown"
+        pullingText="Pull to refresh"
+        refreshingSpinner="circles"
+        refreshingText="Refreshing...">
+      </ion-refresher-content>
+    </ion-refresher>
+    <video-post *ngFor="let video of videos | values" [video]="video">
+    </video-post>
+    <h1 ion-text class='noMoreVideos' *ngIf="noMoreVideos">
+        No more videos!
+    </h1>
+    <ion-infinite-scroll (ionInfinite)="getVideos($event)" threshold="60%" *ngIf="!noMoreVideos">
+        <ion-infinite-scroll-content></ion-infinite-scroll-content>
+    </ion-infinite-scroll>
 
 </ion-content>

@@ -1,0 +1,76 @@
+<div *ngIf="video" attr.data-videoid="{{video.id}}">
+    <ion-item>
+        <ion-avatar item-start (click)="openUser(video.user.id)">
+            <img src="{{video.user.avatar}}">
+        </ion-avatar>
+        <h2 (click)="openUser(video.user.id)">{{video.user.full_name}}</h2>
+        <p>{{video.date_nice}}</p>
+    </ion-item>
+
+    <div>
+        <video width="100%" loop (click)="clickVideo($event)" preload="auto" poster="{{video.poster}}">
+            <source attr.data-src="{{video.location}}" src="{{video.location}}" type="video/mp4" (load)="playVideos()">
+        </video>
+        <ion-row class="interactions" *ngIf="!onlyVideo">
+            <ion-col>
+              <button ion-button full outline value="like" (click)="likeVideo(video.id)">
+              <ion-icon name="ios-heart" isActive="{{video.hasLiked}}">
+                  <ion-badge *ngIf="video.video_likes && video.video_likes[0] && video.video_likes[0].total >= 1"
+                    class="likes-badge" color="danger" >{{video.video_likes[0].total}}</ion-badge>
+                  </ion-icon>
+              </button>
+            </ion-col>
+            <ion-col>
+              <button ion-button full outline value="repost">
+                  <ion-icon name="repeat"></ion-icon>
+              </button>
+            </ion-col>
+            <ion-col>
+              <button ion-button full outline value="give">
+                  <ion-icon name="md-cafe"></ion-icon>
+              </button>
+            </ion-col>
+        </ion-row>
+        <ion-list>
+            <ion-item-sliding>
+                <ion-item>
+                    {{video.caption}}
+                </ion-item>
+                <ion-item-options>
+                    <button ion-button expandable (click)="reportVideo()" *ngIf="video.user.id != currentUser.id">Report</button>
+                    <button ion-button expandable (click)="deleteVideo()" *ngIf="video.user.id == currentUser.id || currentUser.role == 'admin'">Delete</button>
+                    <button ion-button expandable (click)="editVideo()" *ngIf="video.user.id == currentUser.id">Edit</button>
+
+                </ion-item-options>
+            </ion-item-sliding>
+            <span *ngIf="!onlyVideo">
+                <ion-item-sliding *ngFor="let comment of (showMore ? video.video_comments: video.video_comments.slice(0, 3))">
+                    <ion-item text-wrap>
+                        <ion-avatar item-start (click)="openUser(comment.user.id)">
+                            <img src="{{comment.user.avatar}}">
+                        </ion-avatar>
+                        <h2 (click)="openUser(comment.user.id)">{{comment.user.full_name}}</h2>
+                        <p>{{comment.comment}}</p>
+                    </ion-item>
+                    <ion-item-options>
+                        <button ion-button expandable *ngIf="comment.user.id != currentUser.id" (click)="reportComment(comment.id)">Report</button>
+                        <button ion-button expandable
+                        (click)="deleteComment(comment.id)"
+                        *ngIf="comment.user.id == currentUser.id || currentUser.role == 'admin' || currentUser.id == video.user.id">Delete</button>
+                    </ion-item-options>
+                </ion-item-sliding>
+                <ion-item *ngIf="video.video_comments.length > 3 && !showMore" detail-push (click)="showMore = true">
+                    <h4 class="seeMore">View More</h4>
+                </ion-item>
+                <ion-item *ngIf="video.video_comments.length > 3 && showMore" detail-push (click)="showMore = false">
+                    <h4 class="seeMore">View Less</h4>
+                </ion-item>
+                <ion-item>
+                    <ion-input placeholder="Comment..." [(ngModel)]="commentText"></ion-input>
+                    <ion-icon name="md-text" item-end (click)="addComment()"></ion-icon>
+                </ion-item>
+            </span>
+        </ion-list>
+
+    </div>
+</div>

@@ -4,11 +4,23 @@
 </ion-header>
 
 <ion-content>
-  <ion-list>
-    <ion-list-header>Follow us on Twitter</ion-list-header>
-    <ion-item>
-      <ion-icon name="ionic" item-start></ion-icon>
-      @ionicframework
-    </ion-item>
-  </ion-list>
+    <ion-searchbar
+    [(ngModel)]='searchBar'
+    [showCancelButton]="shouldShowCancel"
+    (ionInput)="searchUsers()"
+    (ionCancel)="searchUsers()"></ion-searchbar>
+    <ion-grid *ngIf="searchBar.length < 1">
+        <div [innerHTML]="exploreContent"></div>
+    </ion-grid>
+    <ion-list *ngIf="userResults.length >= 1 && searchBar.length >= 1">
+        <ion-item *ngFor="let user of userResults" (click)="openUser(user.id)">
+            <ion-avatar item-start>
+                <img src="{{user.avatar}}">
+            </ion-avatar>
+            {{user.full_name}}
+        </ion-item>
+        <ion-infinite-scroll (ionInfinite)="searchUsers($event)" threshold="20%">
+           <ion-infinite-scroll-content></ion-infinite-scroll-content>
+         </ion-infinite-scroll>
+    </ion-list>
 </ion-content>

@@ -1,0 +1,24 @@
+<ion-content padding>
+    <ion-list>
+      <ion-item>
+        <ion-label color="primary">Username</ion-label>
+        <ion-input type="email" [(ngModel)]="user.username" ngControl="username"></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label color="primary">Password</ion-label>
+        <ion-input type="password" [(ngModel)]="user.password" ngControl="password"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label color="primary">First Name</ion-label>
+        <ion-input type="text" [(ngModel)]="user.first_name" ngControl="first_name"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label color="primary">Last Name</ion-label>
+        <ion-input type="text" [(ngModel)]="user.last_name" ngControl="last_name"></ion-input>
+      </ion-item>
+    </ion-list>
+    <button ion-button block outline (click)="addAccount()">Create</button>
+    <button ion-button block outline (click)="navCtrl.pop()">Back</button>
+
+</ion-content>

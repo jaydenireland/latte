@@ -1,24 +1,54 @@
 <ion-header>
   <ion-navbar>
+      <ion-buttons right>
+          <button ion-button icon-only (click)="openSettings()">
+             <ion-icon name="cog"></ion-icon>
+           </button>
+      </ion-buttons>
+      <ion-title>
+      {{user.full_name}}
+      </ion-title>
   </ion-navbar>
 </ion-header>
 
-<ion-content>
+<ion-content (ionScroll)="playVideos($event)">
 <ion-grid>
-    <ion-row>
+    <ion-row class="profileSum">
         <ion-col col-3>
-            <ion-avatar>
-                <img src="https://via.placeholder.com/200x200">
-            </ion-avatar>
+            <img src="{{user.avatar}}" class="avatar">
         </ion-col>
-        <ion-col>
-            <ion-chip *ngFor="let i of [1,2]">
-              <ion-label color="secondary">
-                  <p>Followers</p>
-                  <p>24</p>
-              </ion-label>
-            </ion-chip>
+        <ion-col col-3 class="stat">
+            <p>Posts</p>
+            <p>{{ (videos | values).length }}</p>
+        </ion-col>
+        <ion-col col-3 class="stat" (click)="openFollowers()">
+            <p>Followers</p>
+            <p>{{ user.followers }}</p>
+        </ion-col>
+        <ion-col col-3 class="stat" (click)="openFollowing()">
+            <p>Following</p>
+            <p>{{ user.following }}</p>
         </ion-col>
     </ion-row>
+    <ion-row class="editProfile">
+        <ion-col col-9 offset-3>
+            <button ion-button full (click)="editProfile()">Edit Profile</button>
+        </ion-col>
+    </ion-row>
+</ion-grid>
+<ion-grid>
+    <ng-container *ngIf="videos.length >= 1">
+        <video-post *ngFor="let video of videos | values" [video]="video">
+        </video-post>
+    </ng-container>
+    <h1 ion-text class='noVideos' *ngIf="videos.length < 1">
+        No videos!
+    </h1>
+    <h1 ion-text class='noVideos' *ngIf="noMoreVideos">
+        No more videos!
+    </h1>
+    <ion-infinite-scroll *ngIf="!noMoreVideos" (ionInfinite)="getMyVideos($event)" threshold="60%">
+       <ion-infinite-scroll-content></ion-infinite-scroll-content>
+     </ion-infinite-scroll>
 </ion-grid>
 </ion-content>
