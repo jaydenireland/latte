@@ -1,5 +1,16 @@
 page-create-account {
-    .show-tabbar {
-        display: none;
+    ion-content {
+        .scroll-content {
+            background: rgba(95, 177, 237, 0.2);
+        }
+        button {
+            background-color: white !important;
+        }
+        .item-input:nth-child(1) {
+            border-radius: 10px 10px 0px 0px;
+        }
+        .item-input:nth-child(4) {
+            border-radius: 0px 0px 10px 10px;
+        }
     }
 }

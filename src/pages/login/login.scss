@@ -1,5 +1,27 @@
 page-login {
-    .tabbar {
-        display:none;
+    ion-list {
+        padding-top: 20px;
+    }
+    img.logo {
+        margin-top: -15px;
+    }
+    .title {
+        text-align: center;
+        font-size:64px;
+        font-family: 'Nanum Pen Script', cursive;
+        margin-bottom: -15px;
+        margin-top: -5px;
+    }
+    .scroll-content {
+        background: rgba(95, 177, 237, 0.2);
+    }
+    button {
+        background-color: white !important;
+    }
+    .item-input:nth-child(1) {
+        border-radius: 10px 10px 0px 0px;
+    }
+    .item-input:nth-child(2) {
+        border-radius: 0px 0px 10px 10px;
     }
 }

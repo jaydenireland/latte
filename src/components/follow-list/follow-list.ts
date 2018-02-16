@@ -21,10 +21,12 @@ export class FollowListComponent {
       if (this.navParams.get('action') == "Followers") {
           latteService.getFollowers(this.navParams.get('user')).then(data => {
               this.followList = data;
+              console.log(this);
           });
       } else if (this.navParams.get('action') == "Following") {
           latteService.getFollowing(this.navParams.get('user')).then(data => {
               this.followList = data;
+              console.log(this);
           });
       }
   }
