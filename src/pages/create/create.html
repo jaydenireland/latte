@@ -1,4 +1,17 @@
 <ion-content>
-    {{ (debugString | json )}}
-    <button ion-button full outline (click)="start()">Start</button>
+    <form>
+        <div class="input-file-container">
+          <input class="input-file" id="upload" type="file">
+          <label tabindex="0" for="my-file" class="input-file-trigger">Select a file...</label>
+        </div>
+        <ion-input placeholder="Caption" [(ngModel)]="video.caption" [ngModelOptions]="{standalone: true}"></ion-input>
+        <button ion-button full (click)="upload()">Submit</button>
+    </form>
+    <loading-bar [progress]="progress"></loading-bar>
+    <!-- <div *ngIf="debugString.cdn.length >= 1">
+        cdn: {{ debugString.cdn }}
+    </div>
+    <div *ngIf="debugString.api.length >= 1">
+        api: {{ debugString.api }}
+    </div> -->
 </ion-content>

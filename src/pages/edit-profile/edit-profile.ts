@@ -8,6 +8,8 @@ import { LatteServiceProvider } from '../../providers/latte-service/latte-servic
 })
 export class EditProfilePage {
   public user : any = {
+      'first_name': '',
+      'last_name': '',
       'full_name': '',
       'avatar': '',
   }
@@ -18,7 +20,12 @@ export class EditProfilePage {
       let tempCall = this.latteService.whoAmI();
       this.user = tempCall.user;
       tempCall.promise.then(user => {
-         this.user = user; 
+         this.user = user;
+      });
+  }
+  save() {
+      this.latteService.editProfile(this.user.first_name, this.user.last_name).then(res => {
+         this.navCtrl.pop();
       });
   }
 }

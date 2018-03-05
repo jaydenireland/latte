@@ -322,14 +322,34 @@ export class LatteServiceProvider {
           });
       });
   }
-  editProfile(name) {
+  editProfile(first_name, last_name) {
       return new Promise(resolve => {
           this.http.post(`${this.api_base}/Users/edit`,
-          `oauth_token=${this.oauth_token}&name=${name}`,
+          `oauth_token=${this.oauth_token}&first_name=${first_name}&last_name=${last_name}`,
           {headers: {'Content-Type': 'application/x-www-form-urlencoded'}})
           .subscribe((res: any) => {
              resolve(res.success);
           });
       })
+  }
+  uploadVideo(location, caption) {
+      return new Promise(resolve => {
+          this.http.post(`${this.api_base}/Videos/upload`,
+          `oauth_token=${this.oauth_token}&location=${location}&caption=${caption}`,
+          {headers: {'Content-Type': 'application/x-www-form-urlencoded'}})
+          .subscribe((res: any) => {
+             resolve(res);
+          });
+      });
+  }
+  getUserID(username) {
+      return new Promise(resolve => {
+          this.http.post(`${this.api_base}/Users/findByUsername`,
+          `oauth_token=${this.oauth_token}&username=${username}`,
+          {headers: {'Content-Type': 'application/x-www-form-urlencoded'}})
+          .subscribe((res: any) => {
+             resolve(res);
+          });
+      });
   }
 }

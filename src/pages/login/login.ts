@@ -64,7 +64,7 @@ export class LoginPage {
    login() {
        this.latteService.login(this.user.username, this.user.password).then(success => {
         if (success) {
-            this.navCtrl.goToRoot({direction: 'back'});
+            this.navCtrl.goToRoot({direction: 'forward'});
         } else {
             if (this.attempts >= 2) {
                 this.passwordRecovery();

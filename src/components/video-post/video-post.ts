@@ -1,10 +1,11 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter, ChangeDetectorRef, SecurityContext } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { LatteServiceProvider } from '../../providers/latte-service/latte-service';
 import { UserPage } from '../../pages/user/user';
 import { NavController } from 'ionic-angular';
 import { ReportComponent } from '../report/report';
 import { ModalController, NavParams, ToastController, AlertController } from 'ionic-angular';
+import { DomSanitizer } from '@angular/platform-browser';
 
 
 /**
@@ -21,16 +22,45 @@ export class VideoPostComponent {
   public currentUser : any;
   public commentText : string = '';
   public showMore : boolean = false;
+  public editing : boolean = false;
   @Input('video') video;
+  @Input('noVideo') noVideo = false;
   @Input('onlyVideo') onlyVideo;
   constructor(
       public latteService: LatteServiceProvider,
       public navCtrl: NavController,
       public modalCtrl: ModalController,
       public toastCtrl: ToastController,
+      private cdr: ChangeDetectorRef,
+      public sanitizer: DomSanitizer,
       public alertCtrl: AlertController) {
       let tempCall = latteService.whoAmI(false);
       this.currentUser = tempCall.user;
+  }
+  ngAfterViewInit(){
+      this.video.caption = this.sanitizer.sanitize(SecurityContext.HTML, this.video.caption);
+      this.video.caption = this.strip(this.video.caption);
+      this.video.caption = this.video.caption.replace(/@\w+/g, function (a) {
+          return `<a data-username='${a}'>${a}</a>`;
+      });
+      this.video.caption = this.sanitizer.bypassSecurityTrustHtml(this.video.caption);
+      this.cdr.detectChanges();
+      var _this = this;
+      (<any>document).querySelectorAll("[data-username]").forEach(e => {
+         e.addEventListener('click', function() {
+             var username = this.dataset['username'];
+             _this.openUserByUsername(username.replace('@', ''));
+         });
+      });
+
+  }
+  strip(html){
+      var tmp = (<any>document).implementation.createHTMLDocument("New").body;
+      tmp.innerHTML = html;
+      return tmp.textContent || tmp.innerText || "";
+  }
+  editVideo() {
+     this.editing = !this.editing;
   }
   reportComment(comment_id) {
       let modal = this.modalCtrl.create(ReportComponent, {
@@ -82,6 +112,11 @@ export class VideoPostComponent {
      } else {
          event.target.pause();
      }
+  }
+  openUserByUsername(username) {
+      this.latteService.getUserID(username).then((res : any) => {
+          if (res.success) this.openUser(res.user.id) && console.log(res);
+      });
   }
   openUser(userID) {
       this.navCtrl.push(UserPage, {

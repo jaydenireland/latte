@@ -1,4 +1,5 @@
 import { NgModule, ErrorHandler } from '@angular/core';
+
 import { BrowserModule } from '@angular/platform-browser';
 import { HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
@@ -14,18 +15,20 @@ import { CreateAccountPage } from '../pages/create-account/create-account';
 import { TabsPage } from '../pages/tabs/tabs';
 import { ProfilePage } from '../pages/profile/profile';
 import { UserPage } from '../pages/user/user';
+import { ViewPage } from '../pages/view/view';
 
 import { CreatePage } from '../pages/create/create';
 import { LoginPage } from '../pages/login/login';
 import { EditProfilePage } from '../pages/edit-profile/edit-profile';
 
+import { LoadingBarComponent } from '../components/loading-bar/loading-bar';
 import { VideoPostComponent } from '../components/video-post/video-post';
 import { FollowListComponent } from '../components/follow-list/follow-list';
 import { ReportComponent } from '../components/report/report';
 
-
 import { Camera } from '@ionic-native/camera';
-import { VideoCapturePlus } from '@ionic-native/video-capture-plus';
+import { MediaCapture } from '@ionic-native/media-capture';
+import { Base64 } from '@ionic-native/base64';
 
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
@@ -42,9 +45,11 @@ import { LatteServiceProvider } from '../providers/latte-service/latte-service';
     CreatePage,
     LoginPage,
     UserPage,
+    ViewPage,
     EditProfilePage,
     CreateAccountPage,
     VideoPostComponent,
+    LoadingBarComponent,
     FollowListComponent,
     ReportComponent,
     TabsPage
@@ -64,6 +69,7 @@ import { LatteServiceProvider } from '../providers/latte-service/latte-service';
     ExplorePage,
     ProfilePage,
     HomePage,
+    ViewPage,
     CreateAccountPage,
     FollowListComponent,
     ReportComponent,
@@ -77,7 +83,8 @@ import { LatteServiceProvider } from '../providers/latte-service/latte-service';
     StatusBar,
     SplashScreen,
     Camera,
-    VideoCapturePlus,
+    Base64,
+    MediaCapture,
     {provide: ErrorHandler, useClass: IonicErrorHandler},
     LatteServiceProvider
   ]

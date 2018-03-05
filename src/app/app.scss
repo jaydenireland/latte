@@ -15,7 +15,7 @@
 // for the .md, .ios, or .wp mode classes. The mode class is
 // automatically applied to the <body> element in the app.
 // $navbar-color: rgb(66, 244, 176);
-$navbar-color: rgb(95, 177, 237);
+$navbar-color: rgb(255,255, 56);
 $toolbar-ios-title-text-align: left;
 @import url('https://fonts.googleapis.com/css?family=Nanum+Pen+Script');
 
@@ -23,11 +23,12 @@ $toolbar-ios-title-text-align: left;
   background-color: $navbar-color;
 }
 
-// ion-content {
-//     .scroll-content {
-//         background: rgba(95, 177, 237, 0.2);
-//     }
-// }
+ion-content {
+    video-post {
+        background: white;
+        border-radius: 5px;
+    }
+}
 
 @mixin circle($width, $color) {
   width: $width;

@@ -1,4 +1,4 @@
-<div *ngIf="video" attr.data-videoid="{{video.id}}">
+<div *ngIf="video && !noVideo" attr.data-videoid="{{video.id}}">
     <ion-item>
         <ion-avatar item-start (click)="openUser(video.user.id)">
             <img src="{{video.user.avatar}}">
@@ -34,7 +34,8 @@
         <ion-list>
             <ion-item-sliding>
                 <ion-item>
-                    {{video.caption}}
+                    <p [innerHTML]="video.caption" *ngIf="!editing"></p>
+                    <ion-input *ngIf="editing" [value]="video.caption"></ion-input>
                 </ion-item>
                 <ion-item-options>
                     <button ion-button expandable (click)="reportVideo()" *ngIf="video.user.id != currentUser.id">Report</button>
@@ -43,7 +44,7 @@
 
                 </ion-item-options>
             </ion-item-sliding>
-            <span *ngIf="!onlyVideo">
+            <span *ngIf="!onlyVideo || !noVideo">
                 <ion-item-sliding *ngFor="let comment of (showMore ? video.video_comments: video.video_comments.slice(0, 3))">
                     <ion-item text-wrap>
                         <ion-avatar item-start (click)="openUser(comment.user.id)">

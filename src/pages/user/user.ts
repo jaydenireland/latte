@@ -52,7 +52,6 @@ export class UserPage {
       this.page=1;
       (<any>document.querySelectorAll("video")).forEach(function(video) {
          video.pause();
-         video.remove();
       });
   }
   openFollowing() {

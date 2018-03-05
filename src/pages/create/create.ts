@@ -1,53 +1,58 @@
 import { Component } from '@angular/core';
 import { NavController } from 'ionic-angular';
 import { Camera } from '@ionic-native/camera';
-import { VideoCapturePlus, VideoCapturePlusOptions, MediaFile } from '@ionic-native/video-capture-plus';
-
+import { MediaCapture, MediaFile, CaptureError, CaptureVideoOptions } from '@ionic-native/media-capture';
+import { LatteServiceProvider } from '../../providers/latte-service/latte-service';
+import { ViewPage } from '../view/view';
 @Component({
   selector: 'page-create',
   templateUrl: 'create.html'
 })
 export class CreatePage {
-  public debugString : any = {};
-  constructor(public navCtrl: NavController, private camera: Camera, public videoCapturePlus: VideoCapturePlus) {}
-  ionViewWillLeave() {
-    // this.cameraPreview.stopCamera();
+  public debugString : any = {
+      cdn : '',
+      api: ''
+  };
+  public progress : number = 0;
+  public video : any = {
+      public_location: '',
+      caption: ''
+  };
+  constructor(public navCtrl: NavController, private camera: Camera, public mediaCaptureCtrl: MediaCapture, public latteService: LatteServiceProvider) {
   }
-  ionViewWillEnter() {
-      // camera options (Size and location).
-      //In the following example, the preview uses the rear camera and display the preview in the back of the webview
-    // const cameraPreviewOpts: CameraPreviewOptions = {
-    //   x: 0,
-    //   y: 0,
-    //   width: window.screen.width,
-    //   height: window.screen.width,
-    //   camera: 'rear',
-    //   tapPhoto: true,
-    //   previewDrag: false,
-    //   toBack: false,
-    //   alpha: 1
-    // };
+  upload() {
+      var url = `https://api.cloudinary.com/v1_1/latte/upload`;
+      var xhr = new XMLHttpRequest();
+      var fd = new FormData();
+      xhr.open('POST', url, true);
+      xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+      xhr.onreadystatechange = (e) => {
+          if (xhr.readyState == 4 && xhr.status == 200) {
+              // File uploaded successfully
+              this.debugString.cdn = xhr.responseText;
+              var response = JSON.parse(xhr.responseText);
+              // https://res.cloudinary.com/cloudName/image/upload/v1483481128/public_id.jpg
+              this.video.public_location = response.secure_url;
+              this._submitUpload();
+          }
+      };
+      fd.append('upload_preset', 'o2vgyd03');
 
-    // // start camera
-    // this.cameraPreview.startCamera(cameraPreviewOpts).then(
-    //   (res) => {
-    //     console.log(res)
-    //   },
-    //   (err) => {
-    //     console.log(err)
-    //   });
+      fd.append('tags', 'beta_upload'); // Optional - add tag for image admin in Cloudinary
+      var input = (<any>document).querySelector('input[type=file]');
+      var file = input.files[0];
+
+      fd.append('file', file);
+      xhr.upload.addEventListener("progress", (e) => {
+          this.progress = Math.round((e.loaded * 100.0) / e.total);
+      });
+      xhr.send(fd);
   }
-  switchCamera() {
-      // this.cameraPreview.switchCamera();
-  }
-  start(){
-      const options: VideoCapturePlusOptions = {
-       limit: 1,
-       highquality: true
-       };
-this.videoCapturePlus.captureVideo(options)
-    // this.videoCapturePlus.captureVideo(options).then(res => {
-    //     this.debugString = res;
-    // }, error => console.log('Something went wrong'));
+  _submitUpload() {
+      this.latteService.uploadVideo(this.video.public_location, this.video.caption).then((res : any) => {
+          this.navCtrl.push(ViewPage, {
+              postID: res.data.id
+          });
+      });
   }
 }

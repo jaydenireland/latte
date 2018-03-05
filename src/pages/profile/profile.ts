@@ -97,6 +97,29 @@ export class ProfilePage {
   editProfile() {
       this.navCtrl.push(EditProfilePage);
   }
+  profilePicture() {
+      this.actionSheetCtrl.create({
+       title: 'Profile Picture',
+       buttons: [
+         {
+           text: 'Remove',
+           role: 'destructive',
+           handler: () => {
+             this.updateProfilePicture(true);
+           }
+       },
+       {
+         text: 'Update',
+         handler: () => {
+           this.updateProfilePicture();
+         }
+       }
+       ]
+   }).present();
+  }
+  updateProfilePicture(remove=false) {
+      console.log(remove);
+  }
   playVideos(event=null) {
       (<any>document.querySelectorAll("video")).forEach(function(video) {
           var rect = video.getBoundingClientRect();
