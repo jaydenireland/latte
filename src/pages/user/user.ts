@@ -18,6 +18,9 @@ export class UserPage {
   public videos : any = [];
   public page: number = 1;
   public userID : number;
+  public reposts : any = [];
+  public currentTab : string = "posts";
+  public repostsPage : number = 1;
   public user: any = {
       full_name: '',
       avatar: 'https://res.cloudinary.com/latte/image/upload/v1517766124/uDlDuIm_i5jglj.jpg'
@@ -37,15 +40,24 @@ export class UserPage {
 
   }
   ionViewWillEnter() {
+
+      // let tempCall = this.latteService.whoAmI();
+      // this.currentUser = tempCall.user;
+      // tempCall.promise.then(user => {
+      //    this.currentUser = user;
+      // });
+      this.videos = this.reposts =  [];
+      this.page = this.repostsPage = 1;
+      this.user = this.latteService.user;
+      this.latteService.whoAmI().promise.then(theUser => {
+          this.currentUser = theUser;
+      });
       this.latteService.getProfile(this.userID).then(data => {
           this.user = data;
           this.getVideos();
+          this.getReposts();
       });
-      let tempCall = this.latteService.whoAmI();
-      this.currentUser = tempCall.user;
-      tempCall.promise.then(user => {
-         this.currentUser = user;
-      });
+
   }
   ionViewWillLeave() {
       this.videos = [];
@@ -77,6 +89,20 @@ export class UserPage {
               if (ionInfinite !== null) ionInfinite.complete();
           } else {
               this.page = 1;
+              if (ionInfinite !== null) ionInfinite.complete();
+          }
+        }
+      );
+  }
+  getReposts(ionInfinite=null) {
+      this.latteService.getUserReposts(this.user.id, this.repostsPage)
+     .then(res => {
+          if (res) {
+              this.reposts = this.reposts.concat((<any>Object).values(res));
+              this.repostsPage++;
+              if (ionInfinite !== null) ionInfinite.complete();
+          } else {
+              this.repostsPage = 1;
               if (ionInfinite !== null) ionInfinite.complete();
           }
         }

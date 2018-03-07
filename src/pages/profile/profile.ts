@@ -16,8 +16,12 @@ import { EditProfilePage } from '../edit-profile/edit-profile';
 })
 export class ProfilePage {
   public videos : any = [];
+  public reposts : any = [];
   public page: number = 1;
+  public repostsPage : number = 1;
   public noMoreVideos : boolean = false;
+  public noMoreReposts : boolean = false;
+  public currentTab : string = "posts";
   public user: any = {
     full_name: '',
     avatar: 'https://res.cloudinary.com/latte/image/upload/v1517766124/uDlDuIm_i5jglj.jpg'
@@ -32,22 +36,21 @@ export class ProfilePage {
 
   }
   ionViewDidEnter() {
-      this.latteService.isLoggedIn().then(res => {
-              this.videos = [];
-              this.page = 1;
-              let tempCall = this.latteService.whoAmI();
-              this.user = tempCall.user;
-              tempCall.promise.then(theUser => {
-                  this.user = theUser;
-              });
-
-              this.getMyVideos();
+      this.videos = this.reposts =  [];
+      this.page = this.repostsPage = 1;
+      this.user = this.latteService.user;
+      this.latteService.whoAmI().promise.then(theUser => {
+          this.user = theUser;
       });
+      this.getMyVideos();
+      this.getMyReposts();
   }
   ionViewDidLeave() {
       this.videos = [];
       this.noMoreVideos = false;
       this.page=1;
+      this.noMoreReposts = false;
+      this.repostsPage=1;
   }
   openFollowing() {
       let modal = this.modalCtrl.create(FollowListComponent, {
@@ -89,6 +92,20 @@ export class ProfilePage {
               if (ionInfinite !== null) ionInfinite.complete();
           } else {
               this.noMoreVideos = true;
+              if (ionInfinite !== null) ionInfinite.complete();
+          }
+        }
+      );
+  }
+  getMyReposts(ionInfinite=null) {
+      this.latteService.getUserReposts(this.latteService.user.id, this.repostsPage)
+     .then(res => {
+          if (res) {
+              this.reposts = this.reposts.concat((<any>Object).values(res));
+              this.repostsPage++;
+              if (ionInfinite !== null) ionInfinite.complete();
+          } else {
+              this.noMoreReposts = true;
               if (ionInfinite !== null) ionInfinite.complete();
           }
         }

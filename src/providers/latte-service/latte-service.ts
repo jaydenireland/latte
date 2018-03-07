@@ -219,6 +219,20 @@ export class LatteServiceProvider {
           });
       });
   }
+  getUserReposts(userID, page=0, limit=5) {
+      return new Promise(resolve => {
+          this.http.post(`${this.api_base}/reposts/view?limit=${limit}&page=${page}`,
+          `oauth_token=${this.oauth_token}&id=${userID}`,
+          {headers: {'Content-Type': 'application/x-www-form-urlencoded'}})
+          .subscribe((res : any) => {
+              if (res) {
+                  resolve(res.data);
+              } else {
+                  resolve(false);
+              }
+          });
+      });
+  }
   likeVideo(videoID) {
       return new Promise(resolve => {
           this.http.post(`${this.api_base}/videoLikes/add`,
@@ -352,4 +366,15 @@ export class LatteServiceProvider {
           });
       });
   }
+  repostVideo(video_id) {
+      return new Promise(resolve => {
+          this.http.post(`${this.api_base}/reposts/add`,
+          `oauth_token=${this.oauth_token}&video_id=${video_id}`,
+          {headers: {'Content-Type': 'application/x-www-form-urlencoded'}})
+          .subscribe((res: any) => {
+             resolve(res.success);
+          });
+      });
+  }
+
 }

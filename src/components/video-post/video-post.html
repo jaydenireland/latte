@@ -8,7 +8,7 @@
     </ion-item>
 
     <div>
-        <video width="100%" loop (click)="clickVideo($event)" preload="auto" poster="{{video.poster}}">
+        <video width="100%" loop (click)="clickVideo($event)" preload="auto" poster="{{video.thePoster}}">
             <source attr.data-src="{{video.location}}" src="{{video.location}}" type="video/mp4" (load)="playVideos()">
         </video>
         <ion-row class="interactions" *ngIf="!onlyVideo">
@@ -21,7 +21,7 @@
               </button>
             </ion-col>
             <ion-col>
-              <button ion-button full outline value="repost">
+              <button ion-button full outline value="repost" (click)="repostVideo()">
                   <ion-icon name="repeat"></ion-icon>
               </button>
             </ion-col>

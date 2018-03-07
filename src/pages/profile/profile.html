@@ -37,18 +37,45 @@
     </ion-row>
 </ion-grid>
 <ion-grid>
-    <ng-container *ngIf="videos.length >= 1">
-        <video-post *ngFor="let video of videos | values" [video]="video">
-        </video-post>
+    <ion-row>
+        <ion-segment mode="md" [(ngModel)]="currentTab" color="primary">
+             <ion-segment-button value="posts">
+                 <ion-icon name="videocam"></ion-icon>
+             </ion-segment-button>
+             <ion-segment-button value="reposts">
+               <ion-icon name="repeat"></ion-icon>
+             </ion-segment-button>
+           </ion-segment>
+    </ion-row>
+    <ng-container *ngIf="currentTab == 'posts'">
+        <ng-container *ngIf="videos.length >= 1">
+            <video-post *ngFor="let video of videos | values" [video]="video">
+            </video-post>
+        </ng-container>
+        <h1 ion-text class='noVideos' *ngIf="videos.length < 1">
+            No videos!
+        </h1>
+        <h1 ion-text class='noVideos' *ngIf="noMoreVideos">
+            No more videos!
+        </h1>
+        <ion-infinite-scroll *ngIf="!noMoreVideos" (ionInfinite)="getMyVideos($event)" threshold="60%">
+           <ion-infinite-scroll-content></ion-infinite-scroll-content>
+         </ion-infinite-scroll>
     </ng-container>
-    <h1 ion-text class='noVideos' *ngIf="videos.length < 1">
-        No videos!
-    </h1>
-    <h1 ion-text class='noVideos' *ngIf="noMoreVideos">
-        No more videos!
-    </h1>
-    <ion-infinite-scroll *ngIf="!noMoreVideos" (ionInfinite)="getMyVideos($event)" threshold="60%">
-       <ion-infinite-scroll-content></ion-infinite-scroll-content>
-     </ion-infinite-scroll>
+    <ng-container *ngIf="currentTab == 'reposts'">
+        <ng-container *ngIf="reposts.length >= 1">
+            <video-post *ngFor="let repost of reposts | values" [video]="repost.video">
+            </video-post>
+        </ng-container>
+        <h1 ion-text class='noVideos' *ngIf="reposts.length < 1">
+            No Reposts
+        </h1>
+        <h1 ion-text class='noVideos' *ngIf="noMoreReposts">
+            No more reposts!
+        </h1>
+        <ion-infinite-scroll *ngIf="!noMoreReposts" (ionInfinite)="getMyReposts($event)" threshold="60%">
+           <ion-infinite-scroll-content></ion-infinite-scroll-content>
+         </ion-infinite-scroll>
+    </ng-container>
 </ion-grid>
 </ion-content>

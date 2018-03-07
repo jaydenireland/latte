@@ -47,9 +47,11 @@ export class VideoPostComponent {
       this.cdr.detectChanges();
       var _this = this;
       (<any>document).querySelectorAll("[data-username]").forEach(e => {
-         e.addEventListener('click', function() {
+         e.addEventListener('click', function(event) {
              var username = this.dataset['username'];
              _this.openUserByUsername(username.replace('@', ''));
+             event.stopPropagation();
+             event.preventDefault();
          });
       });
 
@@ -146,13 +148,30 @@ export class VideoPostComponent {
   }
   addComment() {
       if (this.commentText.length >= 1) {
-          this.latteService.addComment(this.video.id, this.commentText).then(res => {
+          this.latteService.addComment(this.video.id, this.commentText).then((res : any) => {
               if (res) {
                   this.video.video_comments.unshift(res);
                   this.commentText = '';
               }
           });
       }
+  }
+  repostVideo() {
+      this.latteService.repostVideo(this.video.id).then((res : any) => {
+          if (res) {
+              this.toastCtrl.create({
+                message: 'Reposted!',
+                duration: 3000,
+                position: 'bottom'
+            }).present();
+        } else {
+            this.toastCtrl.create({
+              message: 'Something went wrong',
+              duration: 3000,
+              position: 'bottom'
+          }).present();
+        }
+      });
   }
   deleteComment(id) {
       this.alertCtrl.create({
