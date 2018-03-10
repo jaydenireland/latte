@@ -158,9 +158,9 @@ export class VideoPostComponent {
   }
   repostVideo() {
       this.latteService.repostVideo(this.video.id).then((res : any) => {
-          if (res) {
+          if (res.success) {
               this.toastCtrl.create({
-                message: 'Reposted!',
+                message: res.action,
                 duration: 3000,
                 position: 'bottom'
             }).present();

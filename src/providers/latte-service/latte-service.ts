@@ -372,7 +372,7 @@ export class LatteServiceProvider {
           `oauth_token=${this.oauth_token}&video_id=${video_id}`,
           {headers: {'Content-Type': 'application/x-www-form-urlencoded'}})
           .subscribe((res: any) => {
-             resolve(res.success);
+             resolve(res);
           });
       });
   }
