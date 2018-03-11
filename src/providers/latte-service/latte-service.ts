@@ -98,7 +98,7 @@ export class LatteServiceProvider {
 
   }
   deleteVideo(id) {
-     let seq = this.api.post("videos/delete/"+id);
+     let seq = this.api.post("videos/delete/"+id, {});
      return new Promise(resolve => {
          seq.subscribe(
              (data : any) => resolve(data.status === "OK"),
@@ -164,7 +164,7 @@ export class LatteServiceProvider {
       });
   }
   likeVideo(videoID) {
-      let seq = this.api.post('videos/likeVideo/'+videoID);
+      let seq = this.api.post('videos/likeVideo/'+videoID, {});
       return new Promise(resolve => {
           seq.subscribe((res: any) => {
               if (res.status === "OK") {
@@ -176,7 +176,7 @@ export class LatteServiceProvider {
 
   }
   unlikeVideo(videoID) {
-      let seq = this.api.post('videos/unlikeVideo/'+videoID);
+      let seq = this.api.post('videos/unlikeVideo/'+videoID, {});
       return new Promise(resolve => {
           seq.subscribe((res: any) => {
               if (res.status === "OK") {
@@ -288,7 +288,7 @@ export class LatteServiceProvider {
       });
   }
   repostVideo(video_id) {
-      let seq = this.api.post('reposts/add/'+video_id);
+      let seq = this.api.post('reposts/add/'+video_id, {});
       return new Promise(resolve => {
           seq.subscribe((res: any) => {
               if (res.status === "OK") {
