@@ -273,7 +273,7 @@ export class LatteServiceProvider {
   }
   getUserID(username) {
       return new Promise(resolve => {
-          this.getUserByUsername(username).then(res => resolve(res.id));
+          this.getUserByUsername(username).then((res : any) => resolve(res.id));
       });
   }
   getUserByUsername(username) {
