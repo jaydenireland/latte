@@ -33,7 +33,9 @@ import { Base64 } from '@ionic-native/base64';
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
 import { NgPipesModule} from 'ngx-pipes';
+import { InViewportModule } from 'ng-in-viewport';
 import { LatteServiceProvider } from '../providers/latte-service/latte-service';
+import { Api } from '../providers/api/api';
 
 @NgModule({
   declarations: [
@@ -86,6 +88,7 @@ import { LatteServiceProvider } from '../providers/latte-service/latte-service';
     Base64,
     MediaCapture,
     {provide: ErrorHandler, useClass: IonicErrorHandler},
+    Api,
     LatteServiceProvider
   ]
 })

@@ -6,7 +6,7 @@
            </button>
       </ion-buttons>
       <ion-title>
-      {{user.full_name}}
+      {{latteService.user.full_name}}
       </ion-title>
   </ion-navbar>
 </ion-header>
@@ -15,7 +15,7 @@
 <ion-grid>
     <ion-row class="profileSum">
         <ion-col col-3>
-            <img src="{{user.avatar}}" class="avatar" (click)="profilePicture()">
+            <img src="{{latteService.user.avatar}}" class="avatar" (click)="profilePicture()">
         </ion-col>
         <ion-col col-3 class="stat">
             <p>Posts</p>
@@ -23,11 +23,11 @@
         </ion-col>
         <ion-col col-3 class="stat" (click)="openFollowers()">
             <p>Followers</p>
-            <p>{{ user.followers }}</p>
+            <p>{{ latteService.user.followers }}</p>
         </ion-col>
         <ion-col col-3 class="stat" (click)="openFollowing()">
             <p>Following</p>
-            <p>{{ user.following }}</p>
+            <p>{{ latteService.user.following }}</p>
         </ion-col>
     </ion-row>
     <ion-row class="editProfile">

@@ -47,7 +47,7 @@ export class ReportComponent {
       this.latteService.sendReport(this.type, this.id, this.reportText).then(data => {
           if (data) {
               this.toastCtrl.create({
-                message: 'Report was send successfully',
+                message: 'Report was sent successfully',
                 duration: 3000,
                 position: 'bottom'
             }).present();

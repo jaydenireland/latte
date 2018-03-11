@@ -17,11 +17,7 @@ export class EditProfilePage {
 
   }
   ionViewWillEnter() {
-      let tempCall = this.latteService.whoAmI();
-      this.user = tempCall.user;
-      tempCall.promise.then(user => {
-         this.user = user;
-      });
+      this.user = this.latteService.user;
   }
   save() {
       this.latteService.editProfile(this.user.first_name, this.user.last_name).then(res => {

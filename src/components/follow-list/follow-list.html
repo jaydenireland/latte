@@ -12,11 +12,11 @@
 </ion-header>
 <ion-content>
     <ion-list>
-        <ion-item *ngFor="let follow of followList">
-            <ion-avatar item-start (click)="openUser(follow.user.id)">
-                <img src="{{follow.user.avatar}}">
+        <ion-item *ngFor="let user of followList">
+            <ion-avatar item-start (click)="openUser(user.id)">
+                <img src="{{user.avatar}}">
             </ion-avatar>
-            <h2 (click)="openUser(follow.user.id)">{{follow.user.full_name}}</h2>
+            <h2 (click)="openUser(user.id)">{{user.full_name}}</h2>
         </ion-item>
     </ion-list>
 </ion-content>

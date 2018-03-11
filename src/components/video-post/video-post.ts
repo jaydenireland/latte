@@ -34,8 +34,7 @@ export class VideoPostComponent {
       private cdr: ChangeDetectorRef,
       public sanitizer: DomSanitizer,
       public alertCtrl: AlertController) {
-      let tempCall = latteService.whoAmI(false);
-      this.currentUser = tempCall.user;
+      this.currentUser = latteService.user;
   }
   ngAfterViewInit(){
       this.video.caption = this.sanitizer.sanitize(SecurityContext.HTML, this.video.caption);
@@ -158,7 +157,7 @@ export class VideoPostComponent {
   }
   repostVideo() {
       this.latteService.repostVideo(this.video.id).then((res : any) => {
-          if (res.success) {
+          if (res) {
               this.toastCtrl.create({
                 message: res.action,
                 duration: 3000,

@@ -49,9 +49,7 @@ export class UserPage {
       this.videos = this.reposts =  [];
       this.page = this.repostsPage = 1;
       this.user = this.latteService.user;
-      this.latteService.whoAmI().promise.then(theUser => {
-          this.currentUser = theUser;
-      });
+      this.latteService.whoAmI();
       this.latteService.getProfile(this.userID).then(data => {
           this.user = data;
           this.getVideos();

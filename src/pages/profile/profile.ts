@@ -33,15 +33,13 @@ export class ProfilePage {
               public latteService: LatteServiceProvider,
               public modalCtrl: ModalController,
               public appCtrl: App) {
+    this.latteService.whoAmI();
+
 
   }
   ionViewDidEnter() {
       this.videos = this.reposts =  [];
       this.page = this.repostsPage = 1;
-      this.user = this.latteService.user;
-      this.latteService.whoAmI().promise.then(theUser => {
-          this.user = theUser;
-      });
       this.getMyVideos();
       this.getMyReposts();
   }
@@ -54,14 +52,14 @@ export class ProfilePage {
   }
   openFollowing() {
       let modal = this.modalCtrl.create(FollowListComponent, {
-          user: this.user.id,
+          user: this.latteService.user.id,
           action: 'Following'
       });
       modal.present();
   }
   openFollowers() {
       let modal = this.modalCtrl.create(FollowListComponent, {
-          user: this.user.id,
+          user: this.latteService.user.id,
           action: 'Followers'
       });
       modal.present();
@@ -75,7 +73,7 @@ export class ProfilePage {
            role: 'destructive',
            handler: () => {
              this.storage.clear();
-             this.latteService.user = this.latteService.oauth_token = null;
+             this.latteService.user = null;
              this.appCtrl.getRootNav().push(HomePage);
            }
          }

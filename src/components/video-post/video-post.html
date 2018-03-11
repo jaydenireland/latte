@@ -9,7 +9,7 @@
 
     <div>
         <video width="100%" loop (click)="clickVideo($event)" preload="auto" poster="{{video.thePoster}}">
-            <source attr.data-src="{{video.location}}" src="{{video.location}}" type="video/mp4" (load)="playVideos()">
+            <source attr.data-src="{{video.location}}" src="{{video.location}}" type="video/mp4" (load)="playVideos()" attr.data-videosrc="{{video.location}}">
         </video>
         <ion-row class="interactions" *ngIf="!onlyVideo">
             <ion-col>
@@ -38,9 +38,9 @@
                     <ion-input *ngIf="editing" [value]="video.caption"></ion-input>
                 </ion-item>
                 <ion-item-options>
-                    <button ion-button expandable (click)="reportVideo()" *ngIf="video.user.id != currentUser.id">Report</button>
-                    <button ion-button expandable (click)="deleteVideo()" *ngIf="video.user.id == currentUser.id || currentUser.role == 'admin'">Delete</button>
-                    <button ion-button expandable (click)="editVideo()" *ngIf="video.user.id == currentUser.id">Edit</button>
+                    <button ion-button expandable (click)="reportVideo()" *ngIf="video.user.id != latteService.user.id">Report</button>
+                    <button ion-button expandable (click)="deleteVideo()" *ngIf="video.user.id == latteService.user.id || latteService.user.role == 'admin'">Delete</button>
+                    <button ion-button expandable (click)="editVideo()" *ngIf="video.user.id == latteService.user.id">Edit</button>
 
                 </ion-item-options>
             </ion-item-sliding>
@@ -54,10 +54,10 @@
                         <p>{{comment.comment}}</p>
                     </ion-item>
                     <ion-item-options>
-                        <button ion-button expandable *ngIf="comment.user.id != currentUser.id" (click)="reportComment(comment.id)">Report</button>
+                        <button ion-button expandable *ngIf="comment.user.id != latteService.user.id" (click)="reportComment(comment.id)">Report</button>
                         <button ion-button expandable
                         (click)="deleteComment(comment.id)"
-                        *ngIf="comment.user.id == currentUser.id || currentUser.role == 'admin' || currentUser.id == video.user.id">Delete</button>
+                        *ngIf="comment.user.id == latteService.user.id || latteService.user.role == 'admin' || latteService.user.id == video.user.id">Delete</button>
                     </ion-item-options>
                 </ion-item-sliding>
                 <ion-item *ngIf="video.video_comments.length > 3 && !showMore" detail-push (click)="showMore = true">

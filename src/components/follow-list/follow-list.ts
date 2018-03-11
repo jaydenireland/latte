@@ -20,11 +20,13 @@ export class FollowListComponent {
   constructor(public latteService: LatteServiceProvider, public navParams:NavParams, public viewCtrl: ViewController, public navCtrl: NavController) {
       if (this.navParams.get('action') == "Followers") {
           latteService.getFollowers(this.navParams.get('user')).then(data => {
+              console.log(data);
               this.followList = data;
               console.log(this);
           });
       } else if (this.navParams.get('action') == "Following") {
           latteService.getFollowing(this.navParams.get('user')).then(data => {
+              console.log(data);
               this.followList = data;
               console.log(this);
           });

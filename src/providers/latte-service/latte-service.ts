@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Storage } from '@ionic/storage';
+import { Api } from '../api/api';
 
 /*
   Generated class for the LatteServiceProvider provider.
@@ -10,369 +11,290 @@ import { Storage } from '@ionic/storage';
 */
 @Injectable()
 export class LatteServiceProvider {
-  public oauth_token : string = '';
-  public api_base : string;
+  public jwt : string = "";
   public user : any = {};
-  constructor(public http: HttpClient,  private storage: Storage) {
-    this.api_base = "https://videos-api.jaydenireland.com";
-    this.getVars();
+  constructor(public api : Api,  private storage: Storage) {
   }
-  getVars() {
-      return new Promise(resolve => {
-          this.storage.get('oauth_token').then(val => {
-              if (val) {
-                  this.oauth_token = val;
-              }
-              this.storage.get('user').then(val_user => {
-                  if (val) {
-                      this.user = val_user;
-                  }
-                  resolve(this.user);
-              });
-          });
-      })
-
-  }
-  whoAmI(promise=true) {
-      let thePromise = null;
-
-      if (promise) {
-          thePromise = new Promise(resolve => {
-              this.http.post(`${this.api_base}/users/whoAmI`,
-              `oauth_token=${this.oauth_token}`,
-              {headers: {'Content-Type': 'application/x-www-form-urlencoded'}})
-              .subscribe((res : any) => {
-                  if (res) {
-                      this.user = res.data;
-                      resolve(res.data);
-                  } else {
-                      resolve(false);
-                  }
-              });
-          });
-      }
-
-      return {
-          'user' : this.user,
-          'promise': thePromise
-      };
+  whoAmI() {
+     let seq = this.api.get('users/me');
+     seq.subscribe((res : any) => {
+        this.user = res.result.user;
+     });
+     return this.user;
   }
   isLoggedIn() {
+      let seq = this.api.get('users/status');
       return new Promise(resolve => {
-          this.getVars().then(res => {
-              resolve(this.oauth_token)
-          });
-      })
-
+          seq.subscribe(
+              (data : any) => resolve(data),
+              (error : any) => resolve(false)
+            );
+      });
   }
   getFollowers(userID) {
-      return new Promise(resolve => {
-          this.http.post(`${this.api_base}/followers/followers`,
-          `oauth_token=${this.oauth_token}&user_id=${userID}`,
-          {headers: {'Content-Type': 'application/x-www-form-urlencoded'}})
-          .subscribe((res : any) => {
-              if (res) {
-                  resolve(res.data);
-              } else {
-                  resolve(false);
-              }
-          });
-      });
+     let seq = this.api.get('followers/followers/' + userID);
+     return new Promise(resolve => {
+         seq.subscribe(
+             (data : any) => resolve(data.result.users),
+             (error : any) => resolve(false)
+           );
+     });
   }
   getFollowing(userID) {
+      let seq = this.api.get('followers/following/' + userID);
       return new Promise(resolve => {
-          this.http.post(`${this.api_base}/followers/following`,
-          `oauth_token=${this.oauth_token}&user_id=${userID}`,
-          {headers: {'Content-Type': 'application/x-www-form-urlencoded'}})
-          .subscribe((res : any) => {
-              if (res) {
-                  resolve(res.data);
-              } else {
-                  resolve(false);
-              }
-          });
+          seq.subscribe(
+              (data : any) => resolve(data.result.users),
+              (error : any) => resolve(false)
+            );
       });
-  }
-  getUser(userID=null) {
-      if (userID == null) {
-          return new Promise(resolve => {
-              this.getProfile(this.user.id).then(res => {
-                  resolve(res);
-              });
-              // this.getVars().then(res => {
-              //     resolve(this.user);
-              // });
-          })
-      }
   }
   login(username, password) {
-        return new Promise(resolve => {
-            this.http.post(`${this.api_base}/users/login`,
-            `username=${username}&password=${password}`,
-            {headers: {'Content-Type': 'application/x-www-form-urlencoded'}})
-            .subscribe((res : any) => {
-                this.oauth_token = res.oauth_token;
-                this.user = res.user;
-                this.storage.set('oauth_token', res.oauth_token);
-                this.storage.set('user', res.user);
-                resolve(res.success);
-            });
-        });
+      let seq = this.api.post('users/login', {username, password});
+      return new Promise(resolve => {
+          seq.subscribe((res: any) => {
+              if (res.status === "OK") {
+                  this.api.jwt = res.result.token;
+                  let user = res.result.token.split('.');
+                  this.user = JSON.parse(atob(user[1]));
+                  resolve(true);
+              }
+              resolve(false);
+          });
+      });
   }
   searchUsers(query, page=0) {
-      return new Promise(resolve => {
-          this.http.post(`${this.api_base}/users/search?page=${page}&limit=10`,
-          `oauth_token=${this.oauth_token}&query=${query}`,
-          {headers: {'Content-Type': 'application/x-www-form-urlencoded'}})
-          .subscribe((res : any) => {
-              if (res) {
-                  resolve(res.data);
-              } else {
-                  resolve(false);
-              }
-          });
-      });
+     let seq = this.api.post("users/search", {query, page})
+     return new Promise(resolve => {
+         seq.subscribe(
+             (data : any) => resolve(data.result.users),
+             (error : any) => resolve(false)
+           );
+       });
   }
   createAccount(username, password, first_name, last_name, avatar="https://res.cloudinary.com/latte/image/upload/v1517766124/uDlDuIm_i5jglj.jpg") {
-        return new Promise(resolve => {
-            this.http.post(`${this.api_base}/users/add`,
-            `username=${username}&password=${password}&first_name=${first_name}&last_name=${last_name}&avatar=${avatar}`,
-            {headers: {'Content-Type': 'application/x-www-form-urlencoded'}})
-            .subscribe((res : any) => {
-                resolve(res.success);
-            });
-        });
+     let seq = this.api.post("users/register", {username, password, first_name, last_name, avatar});
+     return new Promise(resolve => {
+         seq.subscribe((res : any) => {
+             if (res.status === "OK") {
+                 this.api.jwt = res.result.token;
+                 let user = res.result.token.split('.');
+                 this.user = JSON.parse(atob(user[1]));
+                 resolve(true);
+             }
+             resolve(false);
+         });
+     });
+
   }
   getVideo(id) {
-      return new Promise(resolve => {
-          this.http.post(`${this.api_base}/videos/get`,
-          `oauth_token=${this.oauth_token}&id=${id}`,
-          {headers: {'Content-Type': 'application/x-www-form-urlencoded'}})
-          .subscribe((res : any) => {
-              resolve(res.data);
-          });
-      });
+     let seq = this.api.get("videos/get/" + id);
+     return new Promise(resolve => {
+         seq.subscribe(
+             (data : any) => resolve(data.result.data),
+             (error : any) => resolve(false)
+           );
+     });
+
   }
   deleteVideo(id) {
-      return new Promise(resolve => {
-          this.http.post(`${this.api_base}/videos/delete`,
-          `oauth_token=${this.oauth_token}&id=${id}`,
-          {headers: {'Content-Type': 'application/x-www-form-urlencoded'}})
-          .subscribe((res : any) => {
-              resolve(res.success);
-          });
-      });
+     let seq = this.api.post("videos/delete/"+id);
+     return new Promise(resolve => {
+         seq.subscribe(
+             (data : any) => resolve(data.status === "OK"),
+             (error : any) => resolve(false)
+           );
+     });
   }
   getVideos(page=0, limit=5) {
+      let seq = this.api.get('videos/feed', {page, limit});
       return new Promise(resolve => {
-          this.http.post(`${this.api_base}/videos/feed?limit=${limit}&page=${page}`,
-          `oauth_token=${this.oauth_token}`,
-          {headers: {'Content-Type': 'application/x-www-form-urlencoded'}})
-          .subscribe((res : any) => {
-              if (res) {
-                  resolve(res.data);
-              } else {
-                  resolve(false);
+          seq.subscribe((res: any) => {
+              if (res.status === "OK") {
+                  resolve(res.result.data);
               }
+              resolve(false);
           });
       });
+
   }
   getProfile(id) {
-      return new Promise(resolve => {
-          this.http.post(`${this.api_base}/users/getUser/${id}`,
-          `oauth_token=${this.oauth_token}`,
-          {headers: {'Content-Type': 'application/x-www-form-urlencoded'}})
-          .subscribe((res : any) => {
-              if (res) {
-                  resolve(res.data);
-              } else {
-                  resolve(false);
-              }
-          });
-      });
+     let seq = this.api.get('users/user/'+id);
+     return new Promise(resolve => {
+         seq.subscribe((res : any) => {
+             if (res.status === "OK") {
+                 resolve(res.result.user);
+             }
+             resolve(false);
+         });
+     });
   }
   getMyVideos(page=0, limit=5) {
+      let seq = this.api.get('videos/me', {page, limit});
       return new Promise(resolve => {
-          this.http.post(`${this.api_base}/videos/me?limit=${limit}&page=${page}`,
-          `oauth_token=${this.oauth_token}`,
-          {headers: {'Content-Type': 'application/x-www-form-urlencoded'}})
-          .subscribe((res : any) => {
-              if (res) {
-                  resolve(res.data);
-              } else {
-                  resolve(false);
+          seq.subscribe((res: any) => {
+              if (res.status === "OK") {
+                  resolve(res.result.data);
               }
+              resolve(false);
           });
       });
+
   }
   getUserVideos(userID, page=0, limit=5) {
+      let seq = this.api.get('videos/user/'+userID, {page, limit});
       return new Promise(resolve => {
-          this.http.post(`${this.api_base}/videos/user/${userID}?limit=${limit}&page=${page}`,
-          `oauth_token=${this.oauth_token}`,
-          {headers: {'Content-Type': 'application/x-www-form-urlencoded'}})
-          .subscribe((res : any) => {
-              if (res) {
-                  resolve(res.data);
-              } else {
-                  resolve(false);
+          seq.subscribe((res: any) => {
+              if (res.status === "OK") {
+                  resolve(res.result.data);
               }
+              resolve(false);
           });
       });
   }
   getUserReposts(userID, page=0, limit=5) {
+      let seq = this.api.get('reposts/view/'+userID, {page, limit});
       return new Promise(resolve => {
-          this.http.post(`${this.api_base}/reposts/view?limit=${limit}&page=${page}`,
-          `oauth_token=${this.oauth_token}&id=${userID}`,
-          {headers: {'Content-Type': 'application/x-www-form-urlencoded'}})
-          .subscribe((res : any) => {
-              if (res) {
-                  resolve(res.data);
-              } else {
-                  resolve(false);
+          seq.subscribe((res: any) => {
+              if (res.status === "OK") {
+                  resolve(res.result.data);
               }
+              resolve(false);
           });
       });
   }
   likeVideo(videoID) {
+      let seq = this.api.post('videos/likeVideo/'+videoID);
       return new Promise(resolve => {
-          this.http.post(`${this.api_base}/videoLikes/add`,
-          `oauth_token=${this.oauth_token}&video_id=${videoID}`,
-          {headers: {'Content-Type': 'application/x-www-form-urlencoded'}})
-          .subscribe((res : any) => {
-              if (res) {
-                  resolve(res.total);
-              } else {
-                  resolve(false);
+          seq.subscribe((res: any) => {
+              if (res.status === "OK") {
+                  resolve(res.result.total);
               }
+              resolve(false);
           });
       });
+
   }
   unlikeVideo(videoID) {
+      let seq = this.api.post('videos/unlikeVideo/'+videoID);
       return new Promise(resolve => {
-          this.http.post(`${this.api_base}/videoLikes/delete`,
-          `oauth_token=${this.oauth_token}&video_id=${videoID}`,
-          {headers: {'Content-Type': 'application/x-www-form-urlencoded'}})
-          .subscribe((res : any) => {
-              if (res) {
-                  resolve(res.total);
-              } else {
-                  resolve(false);
+          seq.subscribe((res: any) => {
+              if (res.status === "OK") {
+                  resolve(res.result.total);
               }
+              resolve(false);
           });
       });
   }
   followUser(id) {
-      return new Promise(resolve => {
-          this.http.post(`${this.api_base}/followers/follow`,
-          `oauth_token=${this.oauth_token}&following_id=${id}`,
-          {headers: {'Content-Type': 'application/x-www-form-urlencoded'}})
-          .subscribe((res : any) => {
-              resolve(res);
-          });
-      });
+     let seq = this.api.post("followers/follow/"+id, {});
+     return new Promise(resolve => {
+         seq.subscribe(
+             (data : any) => resolve(data.status === "OK"),
+             (error : any) => resolve(false)
+           );
+     });
+
   }
   unfollowUser(id) {
-      return new Promise(resolve => {
-          this.http.post(`${this.api_base}/followers/unfollow`,
-          `oauth_token=${this.oauth_token}&following_id=${id}`,
-          {headers: {'Content-Type': 'application/x-www-form-urlencoded'}})
-          .subscribe((res : any) => {
-              resolve(res);
-          });
-      });
+    let seq = this.api.post("followers/unfollow/"+id, {});
+    return new Promise(resolve => {
+        seq.subscribe(
+            (data : any) => resolve(data.status === "OK"),
+            (error : any) => resolve(false)
+            );
+    });
+
   }
   getComment(id) {
+      let seq = this.api.get("VideoComments/get/"+id);
       return new Promise(resolve => {
-          this.http.post(`${this.api_base}/VideoComments/get`,
-          `oauth_token=${this.oauth_token}&id=${id}`,
-          {headers: {'Content-Type': 'application/x-www-form-urlencoded'}})
-          .subscribe((res : any) => {
-              if (res.success) {
-                  resolve(res.data);
-              } else {
-                  resolve(false)
-              }
-
-          });
+          seq.subscribe(
+              (data : any) => resolve(data.data.data),
+              (error : any) => resolve(false)
+              );
       });
   }
-  addComment(video_id, text) {
-      return new Promise(resolve => {
-          this.http.post(`${this.api_base}/VideoComments/add`,
-          `oauth_token=${this.oauth_token}&video_id=${video_id}&comment=${text}`,
-          {headers: {'Content-Type': 'application/x-www-form-urlencoded'}})
-          .subscribe((res : any) => {
-              resolve(res.data);
-          });
-      });
+  addComment(video_id, comment) {
+     let seq = this.api.post("VideoComments/add/"+video_id, {comment});
+     return new Promise(resolve => {
+         seq.subscribe(
+             (data : any) => resolve(data.status === "OK"),
+             (error : any) => resolve(false)
+             );
+     });
   }
   removeComment(id) {
+      let seq = this.api.delete("VideoComments/delete/"+id);
       return new Promise(resolve => {
-          this.http.post(`${this.api_base}/VideoComments/delete`,
-          `oauth_token=${this.oauth_token}&id=${id}`,
-          {headers: {'Content-Type': 'application/x-www-form-urlencoded'}})
-          .subscribe((res : any) => {
-              resolve(res.success);
-          });
+          seq.subscribe(
+              (data : any) => resolve(data.status === "OK"),
+              (error : any) => resolve(false)
+              );
       });
   }
   getExplore() {
-      return new Promise(resolve => {
-          this.http.post(`${this.api_base}/pages/explore`,
-          `oauth_token=${this.oauth_token}`,
-          {headers: {'Content-Type': 'application/x-www-form-urlencoded'}})
-          .subscribe((res : any) => {
-              resolve(res.data);
-          });
-      })
+     return new Promise(resolve => {
+         resolve(false);
+     });
   }
   sendReport(type,item_id,text) {
+      let seq = this.api.post("Reports/add", {type, item_id, text});
       return new Promise(resolve => {
-          this.http.post(`${this.api_base}/Reports/add`,
-          `oauth_token=${this.oauth_token}&type=${type}&item_id=${item_id}&text=${text}`,
-          {headers: {'Content-Type': 'application/x-www-form-urlencoded'}})
-          .subscribe((res : any) => {
-              resolve(res.success);
-          });
+          seq.subscribe(
+              (data : any) => resolve(data.status === "OK"),
+              (error : any) => resolve(false)
+              );
       });
   }
   editProfile(first_name, last_name) {
+      let seq = this.api.post('users/edit', {first_name, last_name});
       return new Promise(resolve => {
-          this.http.post(`${this.api_base}/Users/edit`,
-          `oauth_token=${this.oauth_token}&first_name=${first_name}&last_name=${last_name}`,
-          {headers: {'Content-Type': 'application/x-www-form-urlencoded'}})
-          .subscribe((res: any) => {
-             resolve(res.success);
-          });
-      })
-  }
-  uploadVideo(location, caption) {
-      return new Promise(resolve => {
-          this.http.post(`${this.api_base}/Videos/upload`,
-          `oauth_token=${this.oauth_token}&location=${location}&caption=${caption}`,
-          {headers: {'Content-Type': 'application/x-www-form-urlencoded'}})
-          .subscribe((res: any) => {
-             resolve(res);
+          seq.subscribe((res: any) => {
+              if (res.status === "OK") {
+                  resolve(res.result.user);
+              }
+              resolve(false);
           });
       });
+
+  }
+  uploadVideo(location, caption) {
+      let seq = this.api.post('videos/upload', {location, caption});
+      return new Promise(resolve => {
+          seq.subscribe((res: any) => {
+              if (res.status === "OK") {
+                  resolve(res.result);
+              }
+              resolve(false);
+          });
+      });
+
   }
   getUserID(username) {
       return new Promise(resolve => {
-          this.http.post(`${this.api_base}/Users/findByUsername`,
-          `oauth_token=${this.oauth_token}&username=${username}`,
-          {headers: {'Content-Type': 'application/x-www-form-urlencoded'}})
-          .subscribe((res: any) => {
-             resolve(res);
+          this.getUserByUsername(username).then(res => resolve(res.id));
+      });
+  }
+  getUserByUsername(username) {
+      let seq = this.api.get('users/getUser/'+username);
+      return new Promise(resolve => {
+          seq.subscribe((res: any) => {
+              if (res.status === "OK") {
+                  resolve(res.result.data);
+              }
+              resolve(false);
           });
       });
   }
   repostVideo(video_id) {
+      let seq = this.api.post('reposts/add/'+video_id);
       return new Promise(resolve => {
-          this.http.post(`${this.api_base}/reposts/add`,
-          `oauth_token=${this.oauth_token}&video_id=${video_id}`,
-          {headers: {'Content-Type': 'application/x-www-form-urlencoded'}})
-          .subscribe((res: any) => {
-             resolve(res);
+          seq.subscribe((res: any) => {
+              if (res.status === "OK") {
+                  resolve(res.result);
+              }
+              resolve(false);
           });
       });
   }
